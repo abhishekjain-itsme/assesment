@@ -36,7 +36,6 @@
                             <button type="button" class="close" data-dismiss="alert">×</button>
                             <strong>{{ $message }}</strong>
                         </div>
-                        <img src="uploads/{{ Session::get('file') }}">
                         @endif
 
                         @if (count($errors) > 0)
@@ -54,7 +53,7 @@
                             @csrf
                             <div class="input-group">
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input" accept=".txt" name="file" id="customFileInput" aria-describedby="customFileInput">
+                                    <input type="file" class="custom-file-input" required accept=".txt" name="file" id="customFileInput" aria-describedby="customFileInput">
                                     <label class="custom-file-label" for="customFileInput">Select file</label>
                                 </div>
                                 <div class="input-group-append">
@@ -69,6 +68,7 @@
                         <table class="table">
                             <thead class="thead-dark">
                                 <tr>
+                                    <th scope="col">#</th>
                                     <th scope="col">Affiliate Id</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Latitude</th>
@@ -77,23 +77,22 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <td>Mark</td>
-                                    <td>Otto</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <td>Jacob</td>
-                                    <td>Thornton</td>
-                                    <td>@fat</td>
-                                    <td>@fat</td>
-                                </tr>
+                                @if ($message = Session::get('data'))
+                                    @foreach (Session::get('data') as $val)
+                                    <tr>
+                                        <th scope="row">{{ $loop->iteration }}</th>
+                                        <th>{{ $val['affiliate_id'] }}</th>
+                                        <td>{{ $val['name'] }}</td>
+                                        <td>{{ $val['latitude'] }}</td>
+                                        <td>{{ $val['longitude'] }}</td>
+                                        <td>{{ $val['distance'] }}</td>
+                                    </tr>
+                                    @endforeach
+                                @else
                                 <tr>
                                     <td colspan="5" class="text-center">No records</td>
                                 </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
