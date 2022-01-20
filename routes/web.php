@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,5 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'HomeController@index')->name('index');
-Route::post('upload', 'HomeController@upload')->name('upload');
+Route::get('/', function () {
+    return view('welcome');
+});
+Route::post('get-nearest-location', [HomeController::class, 'getNearestLocation'])->name('get-nearest-location');

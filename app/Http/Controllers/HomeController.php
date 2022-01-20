@@ -3,41 +3,57 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use File;
 
 class HomeController extends Controller
 {
-    public function index()
+    public $myLat;
+    public $myLong;
+
+    public function __construct()
     {
-        return view('welcome');
+        $this->myLat  = "53.3340285";
+        $this->myLong = "-6.2535495";
     }
 
-    public function upload(Request $request)
+    public function getNearestLocation(Request $request) // get nearest location
     {
-        $request->validate([
-            'file' => 'required|max:2048',
+        $validator = \Validator::make($request->all(), [
+            'file' => 'required|mimes:json|file',
         ]);
 
-        $fileContents = file($request->file, FILE_IGNORE_NEW_LINES);
+        if ($validator->fails()) {
+            $result = [
+                'status'  => 'validation',
+                'message' => 'Please upload valid JSON-encoded file',
+            ];
 
-        foreach ($fileContents as $val)
-        {
-            $info = json_decode($val, true);
-            $kilometers = $this->distance('53.3340285', '-6.2535495', $info['latitude'], $info['longitude'], 'K');
-
-            if ($kilometers <= 100)
-            {
-                $info['distance'] = $kilometers;
-                $arr[] = $info;
-            }
+            return response()->json($result);
         }
 
-        usort($arr, function($a, $b){
-            return $a['affiliate_id'] <=> $b['affiliate_id'];
-        });
+        if (!empty($request->file))
+        {
+            $fileContents = file($request->file, FILE_IGNORE_NEW_LINES);
 
-        return back()->with('success','You have successfully upload the file.')->with('data', $arr);
+            foreach ($fileContents as $val)
+            {
+                $info = json_decode($val, true);
+                $kilometers = $this->distance($this->myLat, $this->myLong, $info['latitude'], $info['longitude'], 'K');
+
+                if ($kilometers <= 100)
+                {
+                    $info['distance'] = $kilometers;
+                    $arr[] = $info;
+                }
+            }
+
+            usort($arr, function($a, $b){
+                return $a['affiliate_id'] <=> $b['affiliate_id'];
+            });
+
+            return back()->with('success','You have successfully upload the file.')->with('data', $arr);
+        } else {
+            return back()->with('error','Please upload valid file.')->with('data', []);
+        }
     }
 
     public function distance($lat1, $lon1, $lat2, $lon2, $unit)

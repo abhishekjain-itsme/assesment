@@ -49,7 +49,7 @@
                         @endif
                     </div>
                     <div class="col-md-4 offset-8">
-                        <form action="{{ route('upload') }}" method="post" enctype="multipart/form-data">
+                        <form action="{{ route('get-nearest-location') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             <div class="input-group">
                                 <div class="custom-file">
